@@ -3,7 +3,7 @@ import { getToken, removeToken } from '../utils/tokenHelper';
 
 // Create axios instance
 const axiosInstance = axios.create({
-  baseURL: 'http://localhost:5000/api',
+  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000/api',
   headers: {
     'Content-Type': 'application/json'
   }
@@ -28,7 +28,7 @@ axiosInstance.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      
+
       removeToken();
       window.location.href = '/login';
     }
