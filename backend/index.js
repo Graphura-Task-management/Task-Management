@@ -7,7 +7,10 @@ const { Server } = require('socket.io');
 const app = express();
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: ['http://localhost:5173', 'https://task-management-liart-nu.vercel.app', 'https://task-management-system-frontend.vercel.app', '*'],
+  credentials: true
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -30,11 +33,11 @@ app.use('/api/users', require('./routes/users'));
 app.use('/api/projects', require('./routes/projects'));
 app.use('/api/tasks', require('./routes/tasks'));
 app.use('/api/notifications', require('./routes/notification'));
-app.use('/api/reports', require('./routes/report')); 
+app.use('/api/reports', require('./routes/report'));
 
 // Check Route
 app.get('/', (req, res) => {
-  res.json({ 
+  res.json({
     message: 'Task Management API is running',
     version: '1.0.0'
   });
@@ -43,7 +46,7 @@ app.get('/', (req, res) => {
 // Error Handling Middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  res.status(500).json({ 
+  res.status(500).json({
     success: false,
     message: 'Something went wrong!',
     error: process.env.NODE_ENV === 'development' ? err.message : undefined
@@ -52,9 +55,9 @@ app.use((err, req, res, next) => {
 
 // 404 Handler
 app.use((req, res) => {
-  res.status(404).json({ 
+  res.status(404).json({
     success: false,
-    message: 'Route not found' 
+    message: 'Route not found'
   });
 });
 
@@ -64,7 +67,7 @@ const server = http.createServer(app);
 
 const io = new Server(server, {
   cors: {
-    origin: "*", 
+    origin: "*",
   }
 });
 
