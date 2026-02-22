@@ -66,12 +66,9 @@ export default function Dashboard() {
   const greeting = useMemo(getGreeting, []);
   const navigate = useNavigate();
 
-   useEffect(() => {
+  useEffect(() => {
     fetchDashboard();
-
-    const interval = setInterval(fetchDashboard, 4000);
-    return () => clearInterval(interval);
-}, []);
+  }, []);
 
   const fetchDashboard = async () => {
     try {

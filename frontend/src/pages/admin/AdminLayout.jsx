@@ -7,13 +7,9 @@ const AdminLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-[#f1f6f6] flex">
-      
+    <div className="min-h-screen bg-[#f1f6f6] flex w-full overflow-x-hidden">
       {/* Sidebar */}
-      <AdminSidebar
-        sidebarOpen={sidebarOpen}
-        setSidebarOpen={setSidebarOpen}
-      />
+      <AdminSidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
 
       {/* Overlay (mobile) */}
       {sidebarOpen && (
@@ -24,10 +20,10 @@ const AdminLayout = () => {
       )}
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col lg:ml-64">
+      <div className="flex-1 flex flex-col w-full lg:ml-64">
         <AdminTopbar setSidebarOpen={setSidebarOpen} />
 
-        <main className="p-4 sm:p-6 lg:p-10">
+        <main className="flex-1 p-4 sm:p-6 lg:p-10 w-full max-w-full overflow-x-hidden">
           <Outlet />
         </main>
       </div>

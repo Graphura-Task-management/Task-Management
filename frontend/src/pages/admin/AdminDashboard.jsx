@@ -85,7 +85,7 @@ const AdminDashboard = () => {
   return (
     <div className="space-y-12 animate-in fade-in duration-700">
       {/* STATS */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-6">
+      <div className="grid grid-cols-2 lg:grid-cols-6 gap-4 sm:gap-6">
         <StatCard
           title="Total Projects"
           value={stats.totalProjects}
@@ -273,14 +273,32 @@ const AdminDashboard = () => {
 /* COMPONENTS */
 
 const StatCard = ({ title, value, icon }) => (
-  <div className="bg-white p-6 rounded-3xl border border-[#d7ebe9] hover:-translate-y-1 transition">
-    <div className="w-12 h-12 bg-[#eaf4f3] text-[#235857] rounded-xl flex items-center justify-center mb-3">
+  <div
+    className="
+    bg-white
+    rounded-3xl
+    border border-[#d7ebe9]
+    aspect-square
+    flex flex-col
+    justify-center
+    items-center
+    text-center
+    p-4 sm:p-6
+    hover:-translate-y-1
+    transition
+  "
+  >
+    <div className="w-10 h-10 sm:w-12 sm:h-12 bg-[#eaf4f3] text-[#235857] rounded-xl flex items-center justify-center mb-3">
       {icon}
     </div>
-    <p className="text-xs font-bold uppercase tracking-widest text-[#6b8f8b]">
+
+    <p className="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-[#6b8f8b]">
       {title}
     </p>
-    <h3 className="text-3xl font-black text-[#235857] mt-1">{value}</h3>
+
+    <h3 className="text-xl sm:text-3xl font-black text-[#235857] mt-1">
+      {value}
+    </h3>
   </div>
 );
 

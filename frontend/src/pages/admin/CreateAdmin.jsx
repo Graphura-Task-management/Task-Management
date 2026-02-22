@@ -13,6 +13,9 @@ export default function CreateAdmin() {
   const [leaders, setLeaders] = useState([]);
   const [editingProject, setEditingProject] = useState(null);
 
+  const [filteredLeaders, setFilteredLeaders] = useState([]);
+
+
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -36,6 +39,20 @@ export default function CreateAdmin() {
       toast.error("Failed to load data");
     }
   };
+
+ useEffect(() => {
+  if (!formData.domain) {
+    setFilteredLeaders([]);
+    return;
+  }
+
+  const filtered = leaders.filter(
+    (leader) => leader.domain === formData.domain
+  );
+
+  setFilteredLeaders(filtered);
+
+}, [formData.domain, leaders]); //  leaders wapas add karo
 
   /* ================= CREATE ================= */
 
@@ -109,10 +126,10 @@ export default function CreateAdmin() {
   };
 
   return (
-    <div className="animate-in fade-in duration-500">
+    <div className="animate-in fade-in duration-500 w-full max-w-full overflow-x-hidden">
       {/* HEADER */}
       <div className="mb-10">
-        <h1 className="text-3xl font-bold text-[#0D2426]">
+        <h1 className="text-2xl sm:text-3xl font-bold text-[#0D2426]">
           Create Projects & Leaders
         </h1>
         <p className="text-[#6D8B8C]">
@@ -121,14 +138,14 @@ export default function CreateAdmin() {
       </div>
 
       {/* CARD */}
-      <div className="bg-white rounded-3xl border border-[#d7ebe9] p-8 shadow-sm">
+      <div className="bg-white rounded-3xl border border-[#d7ebe9] p-5 sm:p-8 shadow-sm w-full">
         {/* CREATE */}
         <div className="mb-12">
           <h2 className="text-lg font-semibold text-[#235857] mb-6">
             Create Project
           </h2>
 
-          <div className="grid lg:grid-cols-6 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4">
             <input
               placeholder="Project Name"
               className="input"
@@ -170,6 +187,8 @@ export default function CreateAdmin() {
               <option value="Full Stack Development">
                 Full Stack Development
               </option>
+
+
               <option value="MERN Stack Development">
                 MERN Stack Development
               </option>
@@ -182,22 +201,24 @@ export default function CreateAdmin() {
               <option value="Front-end Developer">Front-end Developer</option>
               <option value="Back-end Developer">Back-end Developer</option>
             </select>
+  {/*  CHANGED: leaders ki jagah filteredLeaders use kiya */}
+      <select
+        className="input"
+        value={formData.leader}
+        disabled={!formData.domain} //  ADDED: Domain select nahi to disable
+        onChange={(e) =>
+          setFormData({ ...formData, leader: e.target.value })
+        }
+      >
+        <option value="">Leader</option>
 
-            <select
-              className="input"
-              value={formData.leader}
-              onChange={(e) =>
-                setFormData({ ...formData, leader: e.target.value })
-              }
-            >
-              <option value="">Leader</option>
-              {leaders.map((l) => (
-                <option key={l._id} value={l._id}>
-                  {l.name}
-                </option>
-              ))}
-            </select>
-
+        {/*  CHANGED */}
+        {filteredLeaders.map((l) => (
+          <option key={l._id} value={l._id}>
+            {l.name}
+          </option>
+        ))}
+      </select>
             <input
               type="date"
               className="input"
@@ -209,7 +230,7 @@ export default function CreateAdmin() {
 
             <button
               onClick={handleSubmit}
-              className="bg-[#235857] text-white rounded-xl font-semibold shadow-md hover:bg-[#1c4a48] transition"
+              className="bg-[#235857] text-white rounded-xl font-semibold shadow-md hover:bg-[#1c4a48] transition h-[46px] w-full lg:w-auto"
             >
               Create
             </button>
@@ -223,8 +244,8 @@ export default function CreateAdmin() {
             Projects ({projects.length})
           </h2>
 
-          <div className="overflow-hidden rounded-2xl border border-[#d7ebe9]">
-            <table className="w-full border-collapse">
+          <div className="w-full overflow-x-auto rounded-2xl border border-[#d7ebe9]">
+            <table className="min-w-[700px] w-full border-collapse">
               {/* HEADER */}
               <thead className="bg-[#eef7f6]">
                 <tr className="text-left">
@@ -307,7 +328,7 @@ export default function CreateAdmin() {
 
       {editingProject && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-          <div className="bg-white p-8 rounded-2xl w-[500px] shadow-2xl">
+          <div className="bg-white p-6 sm:p-8 rounded-2xl w-[90%] max-w-[500px] shadow-2xl">
             <h2 className="text-xl font-bold mb-6">Edit Project</h2>
 
             <div className="space-y-4">

@@ -1,11 +1,13 @@
-
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { authService } from "../api/authApi";
 import { toast } from "react-toastify";
+import { Eye, EyeOff } from "lucide-react";
 
 export default function Signup() {
   const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState(false);
+  const [showAccessKey, setShowAccessKey] = useState(false);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -145,14 +147,25 @@ export default function Signup() {
                 </Field>
 
                 <Field label="Password">
-                  <Input
-                    name="password"
-                    type="password"
-                    placeholder="Create a strong password"
-                    value={formData.password}
-                    onChange={handleChange}
-                    disabled={loading}
-                  />
+                  <div className="relative">
+                    <Input
+                      name="password"
+                      type={showPassword ? "text" : "password"}
+                      placeholder="Create a strong password"
+                      value={formData.password}
+                      onChange={handleChange}
+                      disabled={loading}
+                      className="pr-12"
+                    />
+
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-4 top-1/2 -translate-y-1/2 text-[#6D8B8C] hover:text-[#235857]"
+                    >
+                      {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                    </button>
+                  </div>
                 </Field>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -217,13 +230,26 @@ export default function Signup() {
                 </div>
 
                 <Field label="Access key">
-                  <Input
-                    name="accessKey"
-                    placeholder="Provided by your organization"
-                    value={formData.accessKey}
-                    onChange={handleChange}
-                    disabled={loading}
-                  />
+                  <div className="relative">
+                    <Input
+                      name="accessKey"
+                      type={showAccessKey ? "text" : "password"}
+                      placeholder="Provided by your organization"
+                      value={formData.accessKey}
+                      onChange={handleChange}
+                      disabled={loading}
+                      className="pr-12"
+                    />
+
+                    <button
+                      type="button"
+                      onClick={() => setShowAccessKey(!showAccessKey)}
+                      className="absolute right-4 top-1/2 -translate-y-1/2 text-[#6D8B8C] hover:text-[#235857]"
+                    >
+                      {showAccessKey ? <EyeOff size={18} /> : <Eye size={18} />}
+                    </button>
+                  </div>
+
                   <p className="mt-1 text-xs text-[#6D8B8C]">
                     Required for create account
                   </p>
@@ -268,7 +294,15 @@ function Field({ label, children }) {
   );
 }
 
-function Input({ type = "text", name, placeholder, value, onChange, disabled }) {
+function Input({
+  type = "text",
+  name,
+  placeholder,
+  value,
+  onChange,
+  disabled,
+  className = "",
+}) {
   return (
     <input
       type={type}
@@ -277,7 +311,7 @@ function Input({ type = "text", name, placeholder, value, onChange, disabled }) 
       value={value}
       onChange={onChange}
       disabled={disabled}
-      className="w-full px-4 py-3 rounded-xl bg-white border border-[#D3D9D4] text-sm text-[#0D2426] placeholder:text-[#9FB1B2] focus:border-[#3B8A7F] focus:ring-4 focus:ring-[#3B8A7F]/20 disabled:opacity-50 disabled:cursor-not-allowed outline-none transition"
+      className={`w-full px-4 py-3 rounded-xl bg-white border border-[#D3D9D4] text-sm text-[#0D2426] placeholder:text-[#9FB1B2] focus:border-[#3B8A7F] focus:ring-4 focus:ring-[#3B8A7F]/20 disabled:opacity-50 disabled:cursor-not-allowed outline-none transition ${className}`}
     />
   );
 }

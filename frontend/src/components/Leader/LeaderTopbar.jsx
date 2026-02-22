@@ -222,7 +222,23 @@ export default function LeaderTopbar({ onMenuClick }) {
             </button>
 
             {isNotificationOpen && (
-              <div className="absolute right-0 mt-3 w-96 bg-white rounded-2xl shadow-2xl border border-[#D3D9D4] overflow-hidden z-[60]">
+              <div
+                className="
+    fixed sm:absolute
+    top-16 sm:top-auto
+    right-1/2 sm:right-0
+    translate-x-1/2 sm:translate-x-0
+    w-[95vw] max-w-[380px]
+    sm:w-96
+    mt-2 sm:mt-3
+    bg-white
+    rounded-2xl
+    shadow-2xl
+    border border-[#D3D9D4]
+    overflow-hidden
+    z-[60]
+  "
+              >
                 {/* Header */}
                 <div className="px-4 py-3 border-b flex justify-between items-center bg-[#F4F8F8]">
                   <span className="text-sm font-bold">

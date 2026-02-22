@@ -119,6 +119,7 @@ function App() {
             <Route path="reports" element={<BilingReports />} />
             <Route path="adminsetting" element={<AdminSettings />} />
             <Route path="leaders" element={<Leaders />} />
+            <Route path="leaders/:id" element={<Leaders />} />
             <Route path="admincalender" element={<AdminCalender />} />
           </Route>
 

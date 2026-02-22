@@ -94,14 +94,15 @@ const userSchema = new mongoose.Schema(
       default: true,
     },
 
-    // ⭐ ADD THIS (FOR FORGOT PASSWORD)
-    resetPasswordToken: {
-      type: String,
-    },
+    
+   // OTP fields (FOR PASSWORD RESET)
+   otp: {
+    type: String,
+},
 
-    resetPasswordExpire: {
-      type: Date,
-    },
+   otpExpire: {
+     type: Date,
+},
 
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,

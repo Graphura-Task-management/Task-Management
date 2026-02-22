@@ -33,8 +33,8 @@ export default function ForgetPassword() {
 
     try {
       await authService.forgotPassword(formData.email);
-      toast.success("Password reset link sent to your email");
-      setStep(2); // move next step
+      toast.success("OTP sent to your email");
+      setStep(2);
     } catch (err) {
       toast.error(err.response?.data?.message || "Something went wrong");
     } finally {
@@ -42,37 +42,40 @@ export default function ForgetPassword() {
     }
   };
 
-  // ================= STEP 2 =================
-  const handleVerifyOTP = async (e) => {
-    e.preventDefault();
+  // ================= STEP 2 (REAL OTP VERIFY) =================
 
-    if (formData.otp.length < 6) {
-      toast.error("Enter the 6-digit code");
-      return;
-    }
+const handleVerifyOTP = async (e) => {
+  e.preventDefault();
 
-    setLoading(true);
+  if (formData.otp.length !== 6) {
+    toast.error("Enter valid 6-digit OTP");
+    return;
+  }
 
-    try {
-      // BACKEND ME OTP VERIFY NAHI HAI
-      // Isliye abhi dummy verify
-      await new Promise((res) => setTimeout(res, 1000));
+  setLoading(true);
 
-      setStep(3);
-      toast.success("Identity verified");
-    } catch (err) {
-      toast.error("Invalid or expired OTP");
-    } finally {
-      setLoading(false);
-    }
-  };
+  try {
+    await authService.verifyOTP({
+      email: formData.email,
+      otp: formData.otp,
+    });
+
+    toast.success("OTP Verified");
+    setStep(3);
+
+  } catch (err) {
+    toast.error(err.response?.data?.message || "Invalid or expired OTP");
+  } finally {
+    setLoading(false);
+  }
+};
 
   // ================= STEP 3 =================
   const handleResetPassword = async (e) => {
     e.preventDefault();
 
-    if (formData.password.length < 8)
-      return toast.error("Password too short");
+    if (formData.password.length < 6)
+      return toast.error("Password must be at least 6 characters");
 
     if (formData.password !== formData.confirmPassword)
       return toast.error("Passwords do not match");
@@ -80,15 +83,18 @@ export default function ForgetPassword() {
     setLoading(true);
 
     try {
-      // ⚠️ token backend se aata hai email link me
-      await authService.resetPassword(
-        formData.otp,
-        formData.password
-      );
+      await authService.resetPassword({
+  email: formData.email,
+  password: formData.password,
+});
 
-      toast.success("Password updated! Redirecting to login...");
+      toast.success("Password updated successfully!");
+      setTimeout(() => {
+        window.location.href = "/login";
+      }, 1500);
+
     } catch (err) {
-      toast.error(err.response?.data?.message || "Failed to update password");
+      toast.error(err.response?.data?.message || "Invalid or expired OTP");
     } finally {
       setLoading(false);
     }
@@ -107,9 +113,9 @@ export default function ForgetPassword() {
               {step === 3 && "Secure Account"}
             </h2>
             <p className="text-white/70">
-              {step === 1 && "Provide your email to receive a secure verification code."}
-              {step === 2 && `We've sent a 6-digit code to ${formData.email}.`}
-              {step === 3 && "Create a strong new password to protect your account."}
+              {step === 1 && "Provide your email to receive a verification code."}
+              {step === 2 && `Enter the OTP sent to ${formData.email}.`}
+              {step === 3 && "Create a strong new password."}
             </p>
           </div>
 
@@ -136,9 +142,12 @@ export default function ForgetPassword() {
           <div className="max-w-sm w-full mx-auto">
 
             {step === 1 && (
-              <FormWrapper title="Reset Password" sub="Enter your work email" onSubmit={handleSendOTP}>
-                <InputField label="Email Address" icon={<Mail size={18} />}
-                  type="email" name="email"
+              <FormWrapper title="Reset Password" sub="Enter your email" onSubmit={handleSendOTP}>
+                <InputField
+                  label="Email Address"
+                  icon={<Mail size={18} />}
+                  type="email"
+                  name="email"
                   value={formData.email}
                   onChange={handleChange}
                   placeholder="name@company.com"
@@ -149,19 +158,25 @@ export default function ForgetPassword() {
 
             {step === 2 && (
               <FormWrapper title="Enter OTP" sub={`Code sent to ${formData.email}`} onSubmit={handleVerifyOTP}>
-                <InputField label="6-Digit Code" icon={<KeyRound size={18} />}
-                  type="text" name="otp"
+                <InputField
+                  label="6-Digit OTP"
+                  icon={<KeyRound size={18} />}
+                  type="text"
+                  name="otp"
                   value={formData.otp}
                   onChange={handleChange}
-                  placeholder="000000" center
+                  placeholder="000000"
+                  center
                 />
-                <SubmitButton text="Verify Code" loading={loading} />
+                <SubmitButton text="Verify OTP" loading={loading} />
               </FormWrapper>
             )}
 
             {step === 3 && (
-              <FormWrapper title="New Password" sub="Set your new credentials" onSubmit={handleResetPassword}>
-                <InputField label="New Password" icon={<Lock size={18} />}
+              <FormWrapper title="New Password" sub="Set your new password" onSubmit={handleResetPassword}>
+                <InputField
+                  label="New Password"
+                  icon={<Lock size={18} />}
                   type={showPassword ? "text" : "password"}
                   name="password"
                   value={formData.password}
@@ -170,14 +185,16 @@ export default function ForgetPassword() {
                   togglePassword={() => setShowPassword(!showPassword)}
                   showPassword={showPassword}
                 />
-                <InputField label="Confirm Password" icon={<ShieldCheck size={18} />}
+                <InputField
+                  label="Confirm Password"
+                  icon={<ShieldCheck size={18} />}
                   type="password"
                   name="confirmPassword"
                   value={formData.confirmPassword}
                   onChange={handleChange}
                   placeholder="••••••••"
                 />
-                <SubmitButton text="Confirm New Password" loading={loading} />
+                <SubmitButton text="Reset Password" loading={loading} />
               </FormWrapper>
             )}
 
@@ -205,9 +222,13 @@ function FormWrapper({ title, sub, onSubmit, children }) {
 function InputField({ label, icon, type, name, value, onChange, placeholder, center, togglePassword, showPassword }) {
   return (
     <div className="space-y-1.5">
-      <label className="text-xs font-semibold text-gray-600 uppercase tracking-wider">{label}</label>
+      <label className="text-xs font-semibold text-gray-600 uppercase tracking-wider">
+        {label}
+      </label>
       <div className="relative">
-        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">{icon}</span>
+        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
+          {icon}
+        </span>
         <input
           required
           type={type}
@@ -215,11 +236,17 @@ function InputField({ label, icon, type, name, value, onChange, placeholder, cen
           value={value}
           onChange={onChange}
           placeholder={placeholder}
-          className={`w-full pl-11 pr-12 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-4 focus:ring-[#3B8A7F]/10 focus:border-[#3B8A7F] outline-none transition-all ${center ? "text-center tracking-widest font-bold" : ""}`}
+          className={`w-full pl-11 pr-12 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-4 focus:ring-[#3B8A7F]/10 focus:border-[#3B8A7F] outline-none transition-all ${
+            center ? "text-center tracking-widest font-bold" : ""
+          }`}
         />
         {togglePassword && (
-          <button type="button" onClick={togglePassword} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400">
-            {showPassword ? <EyeOff size={18}/> : <Eye size={18}/>}
+          <button
+            type="button"
+            onClick={togglePassword}
+            className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400"
+          >
+            {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
           </button>
         )}
       </div>
